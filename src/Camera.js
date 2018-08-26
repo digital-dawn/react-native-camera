@@ -95,6 +95,7 @@ export default class Camera extends Component {
     FlashMode: CameraManager.FlashMode,
     Zoom: CameraManager.Zoom,
     TorchMode: CameraManager.TorchMode,
+    FieldOfView: CameraManager.FieldOfView
   };
 
   static propTypes = {

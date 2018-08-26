@@ -45,6 +45,13 @@ typedef NS_ENUM(NSInteger, RCTCameraType) {
   RCTCameraTypeBack = AVCaptureDevicePositionBack
 };
 
+typedef NS_ENUM(NSInteger, RCTCameraFOV) {
+    RCTCameraFOVHorizontalBack = 0,
+    RCTCameraFOVHorizontalFront = 1,
+    RCTCameraFOVVerticalBack = 2,
+    RCTCameraFOVVerticalFront = 3
+};
+
 typedef NS_ENUM(NSInteger, RCTCameraFlashMode) {
   RCTCameraFlashModeOff = AVCaptureFlashModeOff,
   RCTCameraFlashModeOn = AVCaptureFlashModeOn,

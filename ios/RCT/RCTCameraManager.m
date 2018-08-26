@@ -132,6 +132,12 @@ RCT_EXPORT_MODULE();
                @"off": @(RCTCameraTorchModeOff),
                @"on": @(RCTCameraTorchModeOn),
                @"auto": @(RCTCameraTorchModeAuto)
+               },
+           @"FieldOfView": @{
+               @"horizontalBack": @(RCTCameraFOVHorizontalBack),
+               @"horizontalFront": @(RCTCameraFOVHorizontalFront),
+               @"verticalBack": @(RCTCameraFOVVerticalBack),
+               @"verticalFront": @(RCTCameraFOVVerticalFront)
                }
            };
 }
@@ -424,8 +430,10 @@ RCT_EXPORT_METHOD(getFOV:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejec
   NSArray *devices = [AVCaptureDevice devices];
   AVCaptureDevice *frontCamera;
   AVCaptureDevice *backCamera;
-  double frontFov = 0.0;
-  double backFov = 0.0;
+  double frontHorizontalFov = 0.0;
+  double backHorizontalFov = 0.0;
+  double frontVerticalFov = 0.0;
+  double backVerticalFov = 0.0;
 
   for (AVCaptureDevice *device in devices) {
 
@@ -436,20 +444,33 @@ RCT_EXPORT_METHOD(getFOV:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejec
           if ([device position] == AVCaptureDevicePositionBack) {
               NSLog(@"Device position : back");
               backCamera = device;
-              backFov = backCamera.activeFormat.videoFieldOfView;
+              backHorizontalFov = backCamera.activeFormat.videoFieldOfView;
+
+              CGSize resolution = [self getResolution:device];
+              backVerticalFov = backHorizontalFov / (resolution.width/resolution.height);
           }
           else {
               NSLog(@"Device position : front");
               frontCamera = device;
-              frontFov = frontCamera.activeFormat.videoFieldOfView;
+              frontHorizontalFov = frontCamera.activeFormat.videoFieldOfView;
+
+              CGSize resolution = [self getResolution:device];
+              frontVerticalFov = frontHorizontalFov / (resolution.width/resolution.height);
           }
       }
   }
 
   resolve(@{
-    [NSNumber numberWithInt:RCTCameraTypeBack]: [NSNumber numberWithDouble: backFov],
-    [NSNumber numberWithInt:RCTCameraTypeFront]: [NSNumber numberWithDouble: frontFov]
+    [[NSNumber numberWithInt:RCTCameraFOVHorizontalBack] stringValue]: [NSNumber numberWithDouble: backHorizontalFov],
+    [[NSNumber numberWithInt:RCTCameraFOVHorizontalFront] stringValue]: [NSNumber numberWithDouble: frontHorizontalFov],
+    [[NSNumber numberWithInt:RCTCameraFOVVerticalBack] stringValue]: [NSNumber numberWithDouble: backVerticalFov],
+    [[NSNumber numberWithInt:RCTCameraFOVVerticalFront] stringValue]: [NSNumber numberWithDouble: frontVerticalFov]
   });
+}
+
+- (CGSize)getResolution:(AVCaptureDevice*)device {
+    CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(device.activeFormat.formatDescription);
+    return CGSizeMake((float) dimensions.width, (float)dimensions.height);;
 }
 
 RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {

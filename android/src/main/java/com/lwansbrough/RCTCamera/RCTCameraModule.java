@@ -7,6 +7,7 @@ package com.lwansbrough.RCTCamera;
 
 import android.content.ContentValues;
 import android.content.res.Configuration;
+import android.content.Context;
 import android.hardware.Camera;
 import android.media.*;
 import android.net.Uri;
@@ -49,6 +50,10 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
     public static final int RCT_CAMERA_CAPTURE_TARGET_DISK = 1;
     public static final int RCT_CAMERA_CAPTURE_TARGET_CAMERA_ROLL = 2;
     public static final int RCT_CAMERA_CAPTURE_TARGET_TEMP = 3;
+    public static final int RCT_CAMERA_FOV_HORIZONTAL_BACK = 0;
+    public static final int RCT_CAMERA_FOV_HORIZONTAL_FRONT = 1;
+    public static final int RCT_CAMERA_FOV_VERTICAL_BACK = 2;
+    public static final int RCT_CAMERA_FOV_VERTICAL_FRONT = 3;
     public static final int RCT_CAMERA_ORIENTATION_AUTO = Integer.MAX_VALUE;
     public static final int RCT_CAMERA_ORIENTATION_PORTRAIT = Surface.ROTATION_0;
     public static final int RCT_CAMERA_ORIENTATION_PORTRAIT_UPSIDE_DOWN = Surface.ROTATION_180;
@@ -88,6 +93,12 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
         _reactContext = reactContext;
         _sensorOrientationChecker = new RCTSensorOrientationChecker(_reactContext);
         _reactContext.addLifecycleEventListener(this);
+
+        RCTCamera.createInstance(this.getDeviceOrientation(_reactContext));
+    }
+
+    private int getDeviceOrientation(Context context) {
+        return context.getResources().getConfiguration().orientation;
     }
 
     public static ReactApplicationContext getReactContextSingleton() {
@@ -151,6 +162,7 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
                 put("Orientation", getOrientationConstants());
                 put("FlashMode", getFlashModeConstants());
                 put("TorchMode", getTorchModeConstants());
+                put("FieldOfView", getFOVConstants());
             }
 
             private Map<String, Object> getAspectConstants() {
@@ -243,6 +255,17 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
                         put("off", RCT_CAMERA_TORCH_MODE_OFF);
                         put("on", RCT_CAMERA_TORCH_MODE_ON);
                         put("auto", RCT_CAMERA_TORCH_MODE_AUTO);
+                    }
+                });
+            }
+
+            private Map<String, Object> getFOVConstants() {
+                return Collections.unmodifiableMap(new HashMap<String, Object>() {
+                    {
+                        put("horizontalBack", RCT_CAMERA_FOV_HORIZONTAL_BACK);
+                        put("horizontalFront", RCT_CAMERA_FOV_HORIZONTAL_FRONT);
+                        put("verticalBack", RCT_CAMERA_FOV_VERTICAL_BACK);
+                        put("verticalFront", RCT_CAMERA_FOV_VERTICAL_FRONT);
                     }
                 });
             }
@@ -860,6 +883,28 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
                     });
         } else {
             promise.resolve(response);
+        }
+    }
+
+    @ReactMethod
+    public void getFOV(final Promise promise) {
+        RCTCamera rctCamera = RCTCamera.getInstance();
+
+        if(rctCamera != null) {
+            double backHorizontalFov = rctCamera.getHorizontalFOV(RCT_CAMERA_TYPE_BACK);
+            double frontHorizontalFov = rctCamera.getHorizontalFOV(RCT_CAMERA_TYPE_FRONT);
+
+            double backVerticalFov = rctCamera.getVerticalFOV(RCT_CAMERA_TYPE_BACK);
+            double frontVerticalFov = rctCamera.getVerticalFOV(RCT_CAMERA_TYPE_FRONT);
+
+            final WritableMap response = new WritableNativeMap();
+            response.putDouble("" + RCT_CAMERA_FOV_HORIZONTAL_BACK, backHorizontalFov);
+            response.putDouble("" + RCT_CAMERA_FOV_HORIZONTAL_FRONT, frontHorizontalFov);
+            response.putDouble("" + RCT_CAMERA_FOV_VERTICAL_BACK, backVerticalFov);
+            response.putDouble("" + RCT_CAMERA_FOV_VERTICAL_FRONT, frontVerticalFov);
+            promise.resolve(response);
+        } else {
+            promise.reject(new RuntimeException("Camera is not ready"));
         }
     }
 

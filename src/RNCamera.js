@@ -281,6 +281,10 @@ export default class Camera extends React.Component<PropsType, StateType> {
     return await CameraManager.getAvailablePictureSizes(this.props.ratio, this._cameraHandle);
   };
 
+  async getFOV() {
+    return await CameraManager.getFOV(this._cameraHandle);
+  }
+
   async recordAsync(options?: RecordingOptions) {
     if (!options || typeof options !== 'object') {
       options = {};

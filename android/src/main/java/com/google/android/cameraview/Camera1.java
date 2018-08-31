@@ -494,6 +494,16 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         return new Size(cameraSize.width, cameraSize.height);
     }
 
+    @Override
+    public double getHorizontalFieldOfView() {
+        return mCamera.getParameters().getHorizontalViewAngle();
+    }
+
+    @Override
+    public double getVerticalFieldOfView() {
+        return mCamera.getParameters().getVerticalViewAngle();
+    }
+
     /**
      * This rewrites {@link #mCameraId} and {@link #mCameraInfo}.
      */

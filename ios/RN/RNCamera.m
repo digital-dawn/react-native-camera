@@ -941,4 +941,23 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     }
 }
 
+- (float)getHorizontalFieldOfView
+{
+        AVCaptureDevice *device = [self.videoCaptureDeviceInput device];
+        CGSize resolution = [self getResolution:device];
+        float verticalFieldOfView = device.activeFormat.videoFieldOfView;
+        return verticalFieldOfView / (resolution.width/resolution.height);
+}
+
+- (float)getVerticalFieldOfView
+{
+        AVCaptureDevice *device = [self.videoCaptureDeviceInput device];
+        return device.activeFormat.videoFieldOfView;
+}
+
+- (CGSize)getResolution:(AVCaptureDevice*)device {
+    CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(device.activeFormat.formatDescription);
+    return CGSizeMake((float) dimensions.width, (float)dimensions.height);;
+}
+
 @end

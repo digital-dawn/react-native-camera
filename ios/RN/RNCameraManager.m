@@ -366,5 +366,24 @@ RCT_REMAP_METHOD(getAvailablePictureSizes,
     resolve([[[self class] pictureSizes] allKeys]);
 }
 
+RCT_REMAP_METHOD(getFOV,
+                 reactTag:(nonnull NSNumber *)reactTag
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RNCamera *> *viewRegistry) {
+        RNCamera *view = viewRegistry[reactTag];
+        if (![view isKindOfClass:[RNCamera class]]) {
+            RCTLogError(@"Invalid view returned from registry, expecting RNCamera, got: %@", view);
+        } else {
+            NSArray *fieldOfView = [[NSArray alloc] initWithObjects:
+                [NSNumber numberWithFloat:[view getHorizontalFieldOfView]],
+                [NSNumber numberWithFloat:[view getVerticalFieldOfView]],
+                nil];
+            resolve(fieldOfView);
+        }
+    }];
+}
+
 @end
 

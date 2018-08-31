@@ -499,6 +499,14 @@ public class CameraView extends FrameLayout {
 
     public boolean getScanning() { return mImpl.getScanning(); }
 
+    public double getHorizontalFieldOfView() {
+        return mImpl.getHorizontalFieldOfView();
+    }
+
+    public double getVerticalFieldOfView() {
+        return mImpl.getVerticalFieldOfView();
+    }
+
     /**
      * Take a picture. The result will be returned to
      * {@link Callback#onPictureTaken(CameraView, byte[])}.

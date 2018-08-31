@@ -242,6 +242,10 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
     private Rect mInitialCropRegion;
 
+    private double mHorizontalFieldOfView;
+
+    private double mVerticalFieldOfView;
+
     Camera2(Callback callback, PreviewImpl preview, Context context) {
         super(callback, preview);
         mCameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
@@ -703,6 +707,13 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
         if (!mPreviewSizes.ratios().contains(mAspectRatio)) {
             mAspectRatio = mPreviewSizes.ratios().iterator().next();
         }
+
+        double sensorSizeWidth = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE).getWidth();
+        double sensorSizeHeight = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE).getHeight();
+        double focalLength = mCameraCharacteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0];
+
+        mHorizontalFieldOfView =  2 * Math.atan(sensorSizeWidth / (2 * focalLength));
+        mVerticalFieldOfView =  2 * Math.atan(sensorSizeHeight / (2 * focalLength));
     }
 
     protected void collectPictureSizes(SizeMap sizes, StreamConfigurationMap map) {
@@ -815,6 +826,16 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     @Override
     public Size getPreviewSize() {
         return new Size(mPreview.getWidth(), mPreview.getHeight());
+    }
+
+    @Override
+    public double getHorizontalFieldOfView() {
+        return mHorizontalFieldOfView;
+    }
+
+    @Override
+    public double getVerticalFieldOfView() {
+        return mVerticalFieldOfView;
     }
 
     /**

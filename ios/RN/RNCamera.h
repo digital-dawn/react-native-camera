@@ -58,6 +58,8 @@
 - (void)onCodeRead:(NSDictionary *)event;
 - (void)onFacesDetected:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
+- (float)getHorizontalFieldOfView;
+- (float)getVerticalFieldOfView;
 
 @end
 

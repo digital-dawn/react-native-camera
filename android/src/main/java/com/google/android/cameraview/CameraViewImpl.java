@@ -107,6 +107,10 @@ abstract class CameraViewImpl {
 
     abstract public Size getPreviewSize();
 
+    abstract public double getHorizontalFieldOfView();
+
+    abstract public double getVerticalFieldOfView();
+
     interface Callback {
 
         void onCameraOpened();

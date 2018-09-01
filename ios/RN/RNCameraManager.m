@@ -371,6 +371,10 @@ RCT_REMAP_METHOD(getFOV,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
+#if TARGET_IPHONE_SIMULATOR
+    reject(@"E_GET_FOV_FAILED", @"Field of View is not supported on simulator.", nil);
+    return;
+#endif
     [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RNCamera *> *viewRegistry) {
         RNCamera *view = viewRegistry[reactTag];
         if (![view isKindOfClass:[RNCamera class]]) {

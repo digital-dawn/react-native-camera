@@ -381,11 +381,15 @@ RCT_REMAP_METHOD(getFOV,
             RCTLogError(@"Invalid view returned from registry, expecting RNCamera, got: %@", view);
             reject(@"E_GET_FOV_FAILED", @"Invalid view returned from registry, expecting RNCamera.", nil);
         } else {
-            NSArray *fieldOfView = [[NSArray alloc] initWithObjects:
-                [NSNumber numberWithFloat:[view getVerticalFieldOfView]],
-                [NSNumber numberWithFloat:[view getHorizontalFieldOfView]],
-                nil];
-            resolve(fieldOfView);
+           float verticalFieldOfView = [view getVerticalFieldOfView];
+           float horizontalFieldOfView = [view getHorizontalFieldOfView];
+
+           NSMutableArray *fieldOfView = [[NSMutableArray alloc] init];
+           if(!isnan(verticalFieldOfView) && !isnan(horizontalFieldOfView)) {
+               [fieldOfView addObject:@(verticalFieldOfView)];
+               [fieldOfView addObject:@(horizontalFieldOfView)];
+           }
+           resolve(fieldOfView);
         }
     }];
 }

@@ -375,10 +375,11 @@ RCT_REMAP_METHOD(getFOV,
         RNCamera *view = viewRegistry[reactTag];
         if (![view isKindOfClass:[RNCamera class]]) {
             RCTLogError(@"Invalid view returned from registry, expecting RNCamera, got: %@", view);
+            reject(@"E_GET_FOV_FAILED", @"Invalid view returned from registry, expecting RNCamera.", nil);
         } else {
             NSArray *fieldOfView = [[NSArray alloc] initWithObjects:
-                [NSNumber numberWithFloat:[view getHorizontalFieldOfView]],
                 [NSNumber numberWithFloat:[view getVerticalFieldOfView]],
+                [NSNumber numberWithFloat:[view getHorizontalFieldOfView]],
                 nil];
             resolve(fieldOfView);
         }
